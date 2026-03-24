@@ -12,6 +12,16 @@ class HolidayResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class MatchUpdate(BaseModel):
+    opponent_name: Optional[str] = None
+    opponent_logo_url: Optional[str] = None
+    competition: Optional[str] = None
+    match_date: Optional[date] = None
+    match_time: Optional[time] = None
+    is_home: Optional[bool] = None
+    location: Optional[str] = None
+
+
 class MatchCreate(BaseModel):
     opponent_name: str
     opponent_logo_url: str

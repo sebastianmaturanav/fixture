@@ -15,7 +15,7 @@ export default function LoginForm({ error }: { error: boolean }) {
             placeholder="Contraseña"
             required
             autoFocus
-            className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-400 rounded-lg px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {error && (
             <p className="text-red-500 text-sm">Contraseña incorrecta.</p>

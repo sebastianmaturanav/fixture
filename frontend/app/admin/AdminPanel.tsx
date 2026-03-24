@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Match } from "../types/match";
 import { createMatch, updateMatch, deleteMatch, logout, MatchFormData } from "./actions";
+import LogoPicker from "./LogoPicker";
 
 const COMPETITIONS = ["Liga Chilena", "Copa Libertadores", "Copa Chile", "Supercopa de Chile", "Amistoso"];
 
@@ -39,12 +40,11 @@ function matchToForm(m: Match): FormState {
   };
 }
 
+const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
 function formatDate(dateStr: string) {
-  return new Date(dateStr + "T12:00:00").toLocaleDateString("es-CL", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return `${day} ${MONTHS[month - 1]} ${year}`;
 }
 
 export default function AdminPanel({ initialMatches }: { initialMatches: Match[] }) {
@@ -97,6 +97,10 @@ export default function AdminPanel({ initialMatches }: { initialMatches: Match[]
       is_home: form.is_home,
       location: form.location || null,
     };
+    if (!data.opponent_logo_url) {
+      setError("Selecciona un escudo.");
+      return;
+    }
     startTransition(async () => {
       try {
         if (mode === "new") {
@@ -166,18 +170,18 @@ export default function AdminPanel({ initialMatches }: { initialMatches: Match[]
             <form onSubmit={handleSubmit} className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Rival *</label>
+                  <label className="block text-xs font-semibold text-gray-800 mb-1">Rival *</label>
                   <input
                     name="opponent_name"
                     value={form.opponent_name}
                     onChange={handleChange}
                     required
                     placeholder="Ej: Colo-Colo"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-400 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Competencia *</label>
+                  <label className="block text-xs font-semibold text-gray-800 mb-1">Competencia *</label>
                   <input
                     name="competition"
                     value={form.competition}
@@ -185,41 +189,44 @@ export default function AdminPanel({ initialMatches }: { initialMatches: Match[]
                     required
                     list="competitions-list"
                     placeholder="Ej: Liga Chilena"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-400 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <datalist id="competitions-list">
                     {COMPETITIONS.map((c) => <option key={c} value={c} />)}
                   </datalist>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Fecha *</label>
+                  <label className="block text-xs font-semibold text-gray-800 mb-1">Fecha *</label>
                   <input
                     name="match_date"
                     type="date"
                     value={form.match_date}
                     onChange={handleChange}
                     required
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-400 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Hora (opcional)</label>
+                  <label className="block text-xs font-semibold text-gray-800 mb-1">Hora (opcional)</label>
                   <input
                     name="match_time"
-                    type="time"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+                    placeholder="HH:MM (ej: 20:30)"
                     value={form.match_time}
                     onChange={handleChange}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-400 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Estadio (opcional)</label>
+                  <label className="block text-xs font-semibold text-gray-800 mb-1">Estadio (opcional)</label>
                   <input
                     name="location"
                     value={form.location}
                     onChange={handleChange}
                     placeholder="Ej: Estadio San Carlos"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-400 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div className="flex items-center gap-3 pt-5">
@@ -239,27 +246,13 @@ export default function AdminPanel({ initialMatches }: { initialMatches: Match[]
                 </div>
               </div>
 
-              {/* Logo URL + preview */}
+              {/* Logo picker */}
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">URL del escudo *</label>
-                <div className="flex gap-2 items-center">
-                  <input
-                    name="opponent_logo_url"
-                    value={form.opponent_logo_url}
-                    onChange={handleChange}
-                    required
-                    placeholder="https://..."
-                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  {form.opponent_logo_url && (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={form.opponent_logo_url}
-                      alt="preview"
-                      className="w-10 h-10 object-contain flex-shrink-0"
-                    />
-                  )}
-                </div>
+                <label className="block text-xs font-semibold text-gray-800 mb-1">Escudo *</label>
+                <LogoPicker
+                  value={form.opponent_logo_url}
+                  onChange={(url) => setForm((prev) => ({ ...prev, opponent_logo_url: url }))}
+                />
               </div>
 
               {error && <p className="text-red-500 text-sm">{error}</p>}

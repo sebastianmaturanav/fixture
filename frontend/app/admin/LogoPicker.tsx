@@ -57,7 +57,7 @@ export default function LogoPicker({ value, onChange }: Props) {
         {selected ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={selected.path} alt={selected.name} className="w-7 h-7 object-contain flex-shrink-0" />
+            <img src={selected.path} alt={selected.name} className="w-5 h-5 object-contain flex-shrink-0" />
             <span className="flex-1 text-gray-900 font-medium">{selected.name}</span>
             <span className="text-xs text-gray-400">{selected.country}</span>
           </>
@@ -98,7 +98,7 @@ export default function LogoPicker({ value, onChange }: Props) {
                       {country}
                     </p>
                   )}
-                  <div className="grid grid-cols-4 gap-1">
+                  <div className="grid grid-cols-6 gap-1">
                     {logos.map((logo) => (
                       <button
                         key={logo.path}
@@ -108,7 +108,7 @@ export default function LogoPicker({ value, onChange }: Props) {
                           setOpen(false);
                         }}
                         title={logo.name}
-                        className={`flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-blue-50 transition-colors ${
+                        className={`flex items-center justify-center p-1.5 rounded-lg hover:bg-blue-50 transition-colors ${
                           value === logo.path ? "bg-blue-100 ring-2 ring-blue-400" : ""
                         }`}
                       >
@@ -116,11 +116,8 @@ export default function LogoPicker({ value, onChange }: Props) {
                         <img
                           src={logo.path}
                           alt={logo.name}
-                          className="w-8 h-8 object-contain"
+                          className="w-6 h-6 object-contain"
                         />
-                        <span className="text-xs text-gray-600 text-center leading-tight line-clamp-2">
-                          {logo.name}
-                        </span>
                       </button>
                     ))}
                   </div>

@@ -24,18 +24,13 @@ export default function LogoPicker({ value, onChange }: Props) {
       )
     : LOGOS;
 
-  // Group by country (only when not searching)
   const countries = [...new Set(filtered.map((l) => l.country))];
 
   useEffect(() => {
-    if (open) {
-      setTimeout(() => searchRef.current?.focus(), 50);
-    } else {
-      setSearch("");
-    }
+    if (open) setTimeout(() => searchRef.current?.focus(), 50);
+    else setSearch("");
   }, [open]);
 
-  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -47,76 +42,132 @@ export default function LogoPicker({ value, onChange }: Props) {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} style={{ position: "relative" }}>
       {/* Trigger */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-3 border border-gray-400 rounded-lg px-3 py-2 text-sm text-left hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+        style={{
+          width: "100%",
+          height: 40,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          border: "1px solid #9ca3af",
+          borderRadius: 8,
+          padding: "0 12px",
+          fontSize: 14,
+          background: "white",
+          cursor: "pointer",
+          textAlign: "left",
+        }}
       >
         {selected ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={selected.path} alt={selected.name} className="w-5 h-5 object-contain flex-shrink-0" />
-            <span className="flex-1 text-gray-900 font-medium">{selected.name}</span>
-            <span className="text-xs text-gray-400">{selected.country}</span>
+            <img
+              src={selected.path}
+              alt={selected.name}
+              style={{ width: 20, height: 20, objectFit: "contain", flexShrink: 0 }}
+            />
+            <span style={{ flex: 1, color: "#111827", fontWeight: 500 }}>{selected.name}</span>
+            <span style={{ fontSize: 12, color: "#9ca3af" }}>{selected.country}</span>
           </>
         ) : (
-          <span className="text-gray-400 flex-1">Seleccionar escudo…</span>
+          <span style={{ flex: 1, color: "#9ca3af" }}>Seleccionar escudo…</span>
         )}
-        <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={16}
+          height={16}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#9ca3af"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ flexShrink: 0 }}
+        >
+          <path d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+        <div
+          style={{
+            position: "absolute",
+            zIndex: 50,
+            top: "calc(100% + 4px)",
+            left: 0,
+            right: 0,
+            background: "white",
+            border: "1px solid #e5e7eb",
+            borderRadius: 12,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
+            overflow: "hidden",
+          }}
+        >
           {/* Search */}
-          <div className="p-2 border-b border-gray-100">
+          <div style={{ padding: 8, borderBottom: "1px solid #f3f4f6" }}>
             <input
               ref={searchRef}
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar equipo o país…"
-              className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{
+                width: "100%",
+                border: "1px solid #d1d5db",
+                borderRadius: 8,
+                padding: "6px 12px",
+                fontSize: 14,
+                color: "#111827",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
             />
           </div>
 
           {/* Logo grid */}
-          <div className="overflow-y-auto max-h-64 p-2 space-y-3">
+          <div style={{ overflowY: "auto", maxHeight: 220, padding: 8 }}>
             {filtered.length === 0 && (
-              <p className="text-sm text-gray-400 text-center py-4">Sin resultados</p>
+              <p style={{ textAlign: "center", color: "#9ca3af", fontSize: 14, padding: "16px 0" }}>
+                Sin resultados
+              </p>
             )}
             {countries.map((country) => {
               const logos = filtered.filter((l) => l.country === country);
               return (
-                <div key={country}>
+                <div key={country} style={{ marginBottom: 8 }}>
                   {!search.trim() && (
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-1">
+                    <p style={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.05em", padding: "0 4px 4px" }}>
                       {country}
                     </p>
                   )}
-                  <div className="grid grid-cols-6 gap-1">
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: 2 }}>
                     {logos.map((logo) => (
                       <button
                         key={logo.path}
                         type="button"
-                        onClick={() => {
-                          onChange(logo.path);
-                          setOpen(false);
-                        }}
+                        onClick={() => { onChange(logo.path); setOpen(false); }}
                         title={logo.name}
-                        className={`flex items-center justify-center p-1.5 rounded-lg hover:bg-blue-50 transition-colors ${
-                          value === logo.path ? "bg-blue-100 ring-2 ring-blue-400" : ""
-                        }`}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: 6,
+                          borderRadius: 6,
+                          border: value === logo.path ? "2px solid #60a5fa" : "2px solid transparent",
+                          background: value === logo.path ? "#eff6ff" : "transparent",
+                          cursor: "pointer",
+                        }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={logo.path}
                           alt={logo.name}
-                          className="w-6 h-6 object-contain"
+                          style={{ width: 24, height: 24, objectFit: "contain" }}
                         />
                       </button>
                     ))}
@@ -126,13 +177,13 @@ export default function LogoPicker({ value, onChange }: Props) {
             })}
           </div>
 
-          {/* Clear option */}
+          {/* Clear */}
           {value && (
-            <div className="border-t border-gray-100 p-2">
+            <div style={{ borderTop: "1px solid #f3f4f6", padding: "6px 8px" }}>
               <button
                 type="button"
                 onClick={() => { onChange(""); setOpen(false); }}
-                className="w-full text-xs text-gray-400 hover:text-red-500 text-center py-1"
+                style={{ width: "100%", fontSize: 12, color: "#9ca3af", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}
               >
                 Limpiar selección
               </button>

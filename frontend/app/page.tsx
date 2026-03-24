@@ -1,14 +1,16 @@
 import { Match } from "./types/match";
 import CalendarView from "./components/CalendarView";
 
+const API_URL = process.env.API_URL ?? "http://localhost:8000";
+
 async function getMatches(): Promise<Match[]> {
-  const res = await fetch("http://localhost:8000/matches", { cache: "no-store" });
+  const res = await fetch(`${API_URL}/matches`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch matches");
   return res.json();
 }
 
 async function getHolidays(): Promise<string[]> {
-  const res = await fetch("http://localhost:8000/holidays", { cache: "no-store" });
+  const res = await fetch(`${API_URL}/holidays`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch holidays");
   const data: { date: string }[] = await res.json();
   return data.map((h) => h.date);

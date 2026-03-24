@@ -1,7 +1,9 @@
 import { Match } from "../types/match";
 
 function buildGoogleCalendarUrl(match: Match): string {
-  const title = encodeURIComponent(`UC vs ${match.opponent_name}`);
+  const title = encodeURIComponent(
+    match.is_home ? `UC vs ${match.opponent_name}` : `${match.opponent_name} vs UC`
+  );
   const details = encodeURIComponent(
     `${match.competition} · ${match.is_home ? "Local" : "Visitante"}`
   );

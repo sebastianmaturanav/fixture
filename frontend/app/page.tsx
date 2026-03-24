@@ -20,7 +20,7 @@ export default async function Home() {
   const [matches, holidays] = await Promise.all([getMatches(), getHolidays()]);
 
   return (
-    <main className="min-h-screen p-8 max-w-2xl mx-auto font-sans">
+    <main className="min-h-screen px-4 py-6 sm:p-8 max-w-2xl mx-auto font-sans">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-blue-900">Próximos Partidos</h1>
         <p className="text-blue-600 font-medium mt-1">Universidad Católica</p>

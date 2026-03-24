@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Match } from "../types/match";
 import MatchCard from "./MatchCard";
 
@@ -41,6 +41,14 @@ function isToday(date: Date): boolean {
 
 export default function CalendarView({ matches, holidays: holidayList }: { matches: Match[]; holidays: string[] }) {
   const today = new Date();
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
   const [viewDate, setViewDate] = useState(() => {
     const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
     const firstMatch = matches.find(
@@ -106,7 +114,7 @@ export default function CalendarView({ matches, holidays: holidayList }: { match
         >
           ‹
         </button>
-        <h2 style={{ fontWeight: 600, fontSize: 18, color: "#1e3a8a", textTransform: "capitalize" }}>
+        <h2 style={{ fontWeight: 600, fontSize: isMobile ? 16 : 18, color: "#1e3a8a", textTransform: "capitalize" }}>
           {monthLabel}
         </h2>
         <button
@@ -139,7 +147,7 @@ export default function CalendarView({ matches, holidays: holidayList }: { match
       {/* Days grid */}
       <div style={gridStyle}>
         {days.map((date, i) => {
-          if (!date) return <div key={i} style={{ minHeight: 56 }} />;
+          if (!date) return <div key={i} style={{ minHeight: isMobile ? 44 : 56 }} />;
 
           const key = toDateKey(date);
           const dayMatches = matchesByDate.get(key) ?? [];
@@ -153,9 +161,9 @@ export default function CalendarView({ matches, holidays: holidayList }: { match
               key={i}
               onClick={() => handleDayClick(date)}
               style={{
-                minHeight: 56,
+                minHeight: isMobile ? 44 : 56,
                 borderRadius: 8,
-                padding: 6,
+                padding: isMobile ? 3 : 6,
                 cursor: hasMatch ? "pointer" : "default",
                 backgroundColor: selected ? "#1d4ed8" : hasMatch ? "#eff6ff" : "#f9fafb",
                 boxSizing: "border-box",
@@ -198,65 +206,71 @@ export default function CalendarView({ matches, holidays: holidayList }: { match
                     title={match.opponent_name}
                     style={{
                       width: "100%",
-                      height: 32,
+                      height: isMobile ? 24 : 32,
                       objectFit: "contain",
                       display: "block",
                       opacity: selected ? 0.9 : 1,
                     }}
                   />
-                  <div style={{
-                    fontSize: 9,
-                    fontWeight: 700,
-                    textAlign: "center",
-                    marginTop: 2,
-                    padding: "1px 4px",
-                    borderRadius: 3,
-                    backgroundColor: match.is_home
-                      ? (selected ? "#ffffff" : "#1d4ed8")
-                      : (selected ? "#bfdbfe" : "#bfdbfe"),
-                    color: match.is_home
-                      ? (selected ? "#1d4ed8" : "#ffffff")
-                      : "#1e3a8a",
-                    letterSpacing: "0.03em",
-                  }}>
-                    {match.is_home ? "LOCAL" : "VISITA"}
-                  </div>
-                  <div style={{
-                    fontSize: 8,
-                    fontWeight: 500,
-                    textAlign: "center",
-                    marginTop: 2,
-                    padding: "1px 3px",
-                    borderRadius: 3,
-                    backgroundColor: selected ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.06)",
-                    color: selected ? "#ffffff" : "#6b7280",
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                    textOverflow: "ellipsis",
-                    letterSpacing: "0.02em",
-                  }}>
-                    {match.competition}
-                  </div>
+                  {!isMobile && (
+                    <div style={{
+                      fontSize: 9,
+                      fontWeight: 700,
+                      textAlign: "center",
+                      marginTop: 2,
+                      padding: "1px 4px",
+                      borderRadius: 3,
+                      backgroundColor: match.is_home
+                        ? (selected ? "#ffffff" : "#1d4ed8")
+                        : (selected ? "#bfdbfe" : "#bfdbfe"),
+                      color: match.is_home
+                        ? (selected ? "#1d4ed8" : "#ffffff")
+                        : "#1e3a8a",
+                      letterSpacing: "0.03em",
+                    }}>
+                      {match.is_home ? "LOCAL" : "VISITA"}
+                    </div>
+                  )}
+                  {!isMobile && (
+                    <div style={{
+                      fontSize: 8,
+                      fontWeight: 500,
+                      textAlign: "center",
+                      marginTop: 2,
+                      padding: "1px 3px",
+                      borderRadius: 3,
+                      backgroundColor: selected ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.06)",
+                      color: selected ? "#ffffff" : "#6b7280",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      textOverflow: "ellipsis",
+                      letterSpacing: "0.02em",
+                    }}>
+                      {match.competition}
+                    </div>
+                  )}
                   {/* Símbolo de estado */}
-                  <div style={{
-                    fontSize: 8,
-                    fontWeight: 700,
-                    textAlign: "center",
-                    marginTop: 2,
-                    padding: "1px 4px",
-                    borderRadius: 3,
-                    backgroundColor: match.match_time
-                      ? (selected ? "rgba(255,255,255,0.25)" : "#dcfce7")
-                      : (selected ? "rgba(255,255,255,0.15)" : "#fef9c3"),
-                    color: match.match_time
-                      ? (selected ? "#bbf7d0" : "#166534")
-                      : (selected ? "#fde68a" : "#854d0e"),
-                    letterSpacing: "0.02em",
-                  }}>
-                    {match.match_time
-                      ? match.match_time.slice(0, 5)
-                      : "◷ Por confirmar"}
-                  </div>
+                  {!isMobile && (
+                    <div style={{
+                      fontSize: 8,
+                      fontWeight: 700,
+                      textAlign: "center",
+                      marginTop: 2,
+                      padding: "1px 4px",
+                      borderRadius: 3,
+                      backgroundColor: match.match_time
+                        ? (selected ? "rgba(255,255,255,0.25)" : "#dcfce7")
+                        : (selected ? "rgba(255,255,255,0.15)" : "#fef9c3"),
+                      color: match.match_time
+                        ? (selected ? "#bbf7d0" : "#166534")
+                        : (selected ? "#fde68a" : "#854d0e"),
+                      letterSpacing: "0.02em",
+                    }}>
+                      {match.match_time
+                        ? match.match_time.slice(0, 5)
+                        : "◷ Por confirmar"}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

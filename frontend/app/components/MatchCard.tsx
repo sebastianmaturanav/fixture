@@ -25,7 +25,7 @@ export default function MatchCard({ match }: { match: Match }) {
 
   return (
     <div
-      className="flex items-center gap-4 rounded-xl p-4"
+      className="flex items-center gap-4 rounded-xl p-3 sm:p-4"
       style={{
         backgroundColor: bgColor,
         color: textColor,
@@ -45,7 +45,7 @@ export default function MatchCard({ match }: { match: Match }) {
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-bold text-lg leading-tight">{match.opponent_name}</span>
+          <span className="font-bold text-base sm:text-lg leading-tight">{match.opponent_name}</span>
           {isTentative && (
             <span
               className="text-xs font-bold px-1.5 py-0.5 rounded"

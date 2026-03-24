@@ -1,5 +1,30 @@
 import { Match } from "../types/match";
 
+function buildGoogleCalendarUrl(match: Match): string {
+  const title = encodeURIComponent(`UC vs ${match.opponent_name}`);
+  const details = encodeURIComponent(
+    `${match.competition} · ${match.is_home ? "Local" : "Visitante"}`
+  );
+  const location = match.location ? encodeURIComponent(match.location) : "";
+
+  let dates: string;
+  if (match.match_time) {
+    const [h, m] = match.match_time.split(":");
+    const start = `${match.match_date.replace(/-/g, "")}T${h}${m}00`;
+    const endHour = String(Number(h) + 2).padStart(2, "0");
+    const end = `${match.match_date.replace(/-/g, "")}T${endHour}${m}00`;
+    dates = `${start}/${end}`;
+  } else {
+    const dateStr = match.match_date.replace(/-/g, "");
+    const nextDay = new Date(match.match_date + "T12:00:00");
+    nextDay.setDate(nextDay.getDate() + 1);
+    const endStr = `${nextDay.getFullYear()}${String(nextDay.getMonth() + 1).padStart(2, "0")}${String(nextDay.getDate()).padStart(2, "0")}`;
+    dates = `${dateStr}/${endStr}`;
+  }
+
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+}
+
 function formatDate(dateStr: string): string {
   // Append time to avoid UTC midnight off-by-one in negative-UTC timezones
   const date = new Date(dateStr + "T12:00:00");
@@ -85,6 +110,28 @@ export default function MatchCard({ match }: { match: Match }) {
         >
           {match.is_home ? "Local" : "Visitante"}
         </span>
+        <a
+          href={buildGoogleCalendarUrl(match)}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Agregar a Google Calendar"
+          style={{
+            marginTop: 2,
+            display: "flex",
+            alignItems: "center",
+            gap: 3,
+            fontSize: 11,
+            fontWeight: 600,
+            padding: "3px 8px",
+            borderRadius: 6,
+            backgroundColor: match.is_home ? "rgba(255,255,255,0.15)" : "rgba(29,78,216,0.12)",
+            color: match.is_home ? "#ffffff" : "#1e3a8a",
+            textDecoration: "none",
+            whiteSpace: "nowrap",
+          }}
+        >
+          📅 Google Cal
+        </a>
       </div>
     </div>
   );

@@ -22,6 +22,8 @@ export const LOGOS: Logo[] = [
   { path: "/logos/chile/udechile.png", name: "U. de Chile", country: "Chile" },
   { path: "/logos/chile/udeconcepcion.png", name: "U. de Concepción", country: "Chile" },
   { path: "/logos/chile/unionlacalera.png", name: "Unión La Calera", country: "Chile" },
+  { path: "/logos/chile/copiapo.png", name: "Deportes Copiapó", country: "Chile" },
+  { path: "/logos/chile/sanluis.png", name: "San Luis de Quillota", country: "Chile" },
   // Argentina
   { path: "/logos/argentina/aldosivi.png", name: "Aldosivi", country: "Argentina" },
   { path: "/logos/argentina/argentinos.png", name: "Argentinos Jr.", country: "Argentina" },
